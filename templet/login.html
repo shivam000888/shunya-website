@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Admin Login</title>
+
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script>
+function goToSupport() {
+    window.location.href = '/#contactFooter';
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- CHAT BUTTON LEFT SIDE -->
+<div class="login-chat-btn">
+    <a href="https://wa.me/917039915132?text=Hi%20Shivam,%20I%20would%20like%20to%20know%20more%20about%20your%20services" target="_blank" title="Chat with Shivam">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+</div>
+
+<!-- login left search icon: link to home -->
+<a href="/" class="login-search-icon">
+    <i class="fas fa-search"></i>
+</a>
+
+<div class="login">
+
+<h2>Admin Login</h2>
+
+<form action="/login" method="POST">
+
+<input type="text" name="username" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+<!-- note for users -->
+<p style="text-align:center; font-size:0.9em;">Use <strong>admin</strong> / <strong>shivam123</strong> to log in.</p>
+
+<!-- Support Link -->
+<p style="text-align:center; margin-top:20px;">
+<a href="/" onclick="goToSupport(); return false;" class="support-link">📞 Support / About Me</a>
+</p>
+
+</div>
+
+</body>
+
+</html>
