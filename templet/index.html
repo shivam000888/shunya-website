@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shunya Portfolio</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Celinda:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h2 class="logo">SHUNYA</h2>
+        <div class="navbar-right">
+            <span class="search-icon" onclick="toggleNavbarSearch()"><i class="fas fa-search"></i></span>
+            {% if session.get('admin') %}
+                <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- NAVBAR SEARCH BAR -->
+    <div id="navbarSearchBar" class="navbar-search-bar" style="display:none;">
+        <input type="text" id="navbarSearchInput" class="navbar-search-input" placeholder="Search projects...">
+        <span class="navbar-search-close" onclick="closeNavbarSearch()"><i class="fas fa-times"></i></span>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Creative Graphic Designer</h1>
+        <p>Minimal design. Maximum impact.</p>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="projects">
+        <h2>Projects</h2>
+        <div class="grid" id="projectGrid">
+            {% for project in projects %}
+                <div class="card" data-project-id="{{ project.id }}" data-project-title="{{ project.title.lower() }}" data-filetype="{{ project.filetype }}">
+                    <div class="card-media-wrapper">
+                        {% if project.filetype == 'video' %}
+                            <video class="project-media video-preview" muted loop preload="metadata" playsinline poster="{{ url_for('static', filename='uploads/' + project.filename) }}">
+                                <source src="{{ url_for('static', filename='uploads/' + project.filename) }}" type="video/mp4">
+                            </video>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='uploads/' + project.filename) }}" alt="{{ project.title }}" class="project-media">
+                        {% endif %}
+ 
+                        <button class="save-btn" data-saved="false"><i class="far fa-bookmark"></i></button>
+
+                        <div class="card-overlay">
+                            <div class="overlay-title"><h4>{{ project.title }}</h4></div>
+                        </div>
+                    </div>
+                    <div class="card-like-section">
+                        <button class="heart-btn {% if project.user_liked %}liked{% endif %}" onclick="toggleLike(event, {{ project.id }})" data-project-id="{{ project.id }}">
+                            <i class="heart-icon {% if project.user_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </button>
+                        <span class="like-count" data-project-id="{{ project.id }}">{{ project.likes }}</span>
+                        {% if session.get('admin') %}
+                        <button class="delete-btn" onclick="deleteProject({{ project.id }})">×</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- UPLOAD BUTTON -->
+    {% if session.get('admin') %}
+        <div class="upload-btn" onclick="openUpload()" title="Upload Project">
+            <i class="fas fa-plus"></i>
+        </div>
+    {% endif %}
+
+    <!-- UPLOAD POPUP -->
+    <div id="uploadPopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeUpload()">×</span>
+            <h2>Upload New Project</h2>
+            <p style="font-size:12px; color:#666;">Admin Only</p>
+            <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="text" name="title" id="titleInput" placeholder="Project title" required>
+
+                <div id="dropArea" class="drop-area">
+                    <p>Drag &amp; drop image or video here<br>or click to select</p>
+                    <input type="file" name="media" id="mediaInput" accept="image/*,video/*" required>
+                </div>
+
+                <div id="previewContainer"></div>
+
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEDIA MODAL -->
+    <div id="mediaModal" class="media-modal">
+        <button class="arrow left-arrow" onclick="prevMedia()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="modal-content">
+            <span class="close" onclick="closeMediaModal()">×</span>
+            <img id="modalImg" alt="Project" style="display:none;">
+            <video id="modalVideo" controls style="display:none; max-width:90%; max-height:85vh;"></video>
+            <div class="modal-like-section">
+                <button class="modal-heart-btn" id="modalHeartBtn" onclick="toggleModalLike(event)">
+                    <i class="heart-icon far fa-heart"></i>
+                </button>
+                <span class="modal-like-count" id="modalLikeCount">0</span>
+            </div>
+        </div>
+        <button class="arrow right-arrow" onclick="nextMedia()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="contactFooter">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Me</h3>
+                <p><strong>Name:</strong> Shivam Vhatkar</p>
+                <p><strong>Profession:</strong> Graphics Designer</p>
+                <p><strong>About:</strong> Hi, I'm Shivam, a creative graphic designer. I design graphics using tools like Adobe Photoshop and Canva. I enjoy creating social media posts, banners, and creative designs.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Skills</h3>
+                <ul>
+                    <li>Graphic Design</li>
+                    <li>Social Media Post Design</li>
+                    <li>Banner Design</li>
+                    <li>Logo Design</li>
+                    <li>Photo Editing</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Tools</h3>
+                <ul>
+                    <li>Adobe Photoshop</li>
+                    <li>Canva</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact &amp; Social</h3>
+                <p><strong>Email:</strong> <a href="mailto:shivamvhatkar8@gmail.com">shivamvhatkar8@gmail.com</a></p>
+                <p><strong>Phone/WhatsApp:</strong> <a href="https://wa.me/917039915132" target="_blank">+91 7039915132</a></p>
+                <p><strong>Chat:</strong> <a href="https://wa.me/917039915132?text=Hi%20Shivam,%20I%20would%20like%20to%20know%20more%20about%20your%20services" target="_blank" class="chat-btn">💬 Start Chat</a></p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
