@@ -95,6 +95,9 @@ h1, .logo {
     text-align:center;
     padding:80px;
 }
+.hero h1 {
+    color: black;
+}
 
 /* PROJECT GRID */
 .projects{
@@ -107,8 +110,14 @@ h1, .logo {
     column-fill: balance;
 }
 @media (max-width: 1200px) { .grid { column-width: 180px; } }
-@media (max-width: 768px) { .grid { column-width: 160px; } }
-@media (max-width: 480px) { .grid { column-width: 140px; } }
+@media (max-width: 768px) { 
+    .grid { 
+        column-count: 2;
+        column-width: auto;
+        column-gap: 15px;
+    } 
+}
+@media (max-width: 480px) { .grid { column-count: 1; } }
 
 .card{
     display: inline-block;
